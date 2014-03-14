@@ -1,9 +1,24 @@
-$(document).ready(function () {
-    var canvas = document.getElementById('grid'),
-    ctx = canvas.getContext('2d'),
-    score = $('#score'),
+var SankeGame = function (canvas, score) {
+
+    var ctx = canvas.getContext('2d'),
+    isStarted = false,
+    isOver = false,
     applesEaten = 0,
     blockSize = 10,
+
+    directions = {
+        left: 'left',
+        up: 'up',
+        right: 'right',
+        down: 'down'
+    },
+
+    opposites = {
+        left: 'right',
+        up: 'down',
+        right: 'left',
+        down: 'up'
+    },
 
     snake = {
         body: [
@@ -19,15 +34,6 @@ $(document).ready(function () {
         apples: []
     },
 
-    directions = {
-        left: 'left',
-        up: 'up',
-        right: 'rigth',
-        down: 'down'
-    },
-
-    currentDirection = directions.right,
-
     gridSize = {
         width: canvas.width / blockSize,
         height: canvas.height / blockSize
@@ -38,6 +44,7 @@ $(document).ready(function () {
         drawApples();
         move();
         if (isDead()) {
+            isOver = true;
             console.log('Game Over');
             clearInterval(game);
             ctx.fillStyle = 'rgba(255, 0, 0, 1)';
@@ -114,37 +121,29 @@ $(document).ready(function () {
             ctx.fillStyle = 'rgba(255, 0, 0, 1)';
             ctx.fillRect(block[i].x * blockSize, block[i].y * blockSize, blockSize, blockSize);
         }
-    },
+    };
 
-    game = setInterval(gameLoop, 100);
-
-    for (var i = 0; i < 4; i++) {
-        sprites.apples.push({x: ~~(Math.random() * gridSize.width - 1), y: ~~(Math.random() * gridSize.height - 1)});
-    }
-
-    $(document).keypress(function (e) {
-        switch (e.which) {
-            case 97:
-              if (currentDirection != directions.right) {
-                currentDirection = directions.left;
-              }
-              break;
-            case 119:
-              if (currentDirection != directions.down) {
-                currentDirection = directions.up;
-              }
-              break;
-            case 100:
-              if (currentDirection != directions.left) {
-                currentDirection = directions.right;
-              }
-              break;
-            case 115:
-              if (currentDirection != directions.up) {
-                currentDirection = directions.down;
-              }
-              break;
+    this.setDirection = function (direction) {
+        if (direction != opposites[currentDirection]) {
+            currentDirection = direction;
         }
-        e.preventDefault();
-    });
-});
+    };
+
+    this.isStarted = function () {
+        return isStarted;
+    };
+
+    this.isOver = function () {
+        return isOver;
+    };
+
+    this.newGame = function () {
+        isStarted = true;
+        currentDirection = directions.right;
+        for (var i = 0; i < 4; i++) {
+            sprites.apples.push({x: ~~(Math.random() * gridSize.width - 1), y: ~~(Math.random() * gridSize.height - 1)});
+        }
+        game = setInterval(gameLoop, 100);
+    };
+
+};
