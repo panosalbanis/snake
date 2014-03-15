@@ -1,4 +1,4 @@
-var SankeGame = function (canvas, score) {
+var SankeGame = function (canvas, score, message) {
 
     var ctx = canvas.getContext('2d'),
     isStarted = false,
@@ -41,17 +41,23 @@ var SankeGame = function (canvas, score) {
 
     gameLoop = function () {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawApples();
         move();
         if (isDead()) {
-            isOver = true;
-            console.log('Game Over');
-            clearInterval(game);
-            ctx.fillStyle = 'rgba(255, 0, 0, 1)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            showGameOver();
         } else {
+            drawApples();
             drawSnake();
         }
+    },
+
+    showGameOver = function () {
+        isOver = true;
+        console.log('Game Over');
+        message.text('Game Over, Press Space To Start Over');
+        message.removeClass('hidden');
+        clearInterval(game);
+        ctx.fillStyle = 'rgba(255, 0, 0, 1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
     },
 
     move = function () {
@@ -138,6 +144,7 @@ var SankeGame = function (canvas, score) {
     };
 
     this.newGame = function () {
+        message.addClass('hidden');
         isStarted = true;
         currentDirection = directions.right;
         for (var i = 0; i < 4; i++) {
