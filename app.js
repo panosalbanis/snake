@@ -7,11 +7,10 @@ $(document).ready(function () {
         down: 'down'
     },
 
-    messageElement = $('#message'),
-    scoreElement = $('#score'),
     canvasElement = document.getElementById('grid'),
 
-    game = new SankeGame(canvasElement ,scoreElement, messageElement);
+    game = new SankeGame(canvasElement);
+    game.init();
 
     $(document).on('keydown', function (e) {
         switch (e.which) {
@@ -39,8 +38,7 @@ $(document).ready(function () {
                 if (!game.isStarted()) {
                     game.newGame();
                 } else if (game.isOver()) {
-                    scoreElement.text(0);
-                    game = new SankeGame(canvasElement ,scoreElement, messageElement);
+                    game = new SankeGame(canvasElement);
                     game.newGame();
                 }
                 e.preventDefault();

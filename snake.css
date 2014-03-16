@@ -8,48 +8,7 @@ body {
     padding: 100px;
 }
 
-#playground {
-    position: relative;
-    padding: 50px;
-    width: 480px;
-    height: 320px;
-    background: #f8f8f8;
-    margin: 0 auto;
-}
-
 canvas#grid {
     display: block;
     margin: 0 auto;
-    outline: 5px solid #ccc;
-}
-
-body>header {
-    width: 480px;
-    display: block;
-    margin: 0 auto;
-    padding: 10px 0;
-    font-family: sans-serif;
-    font-size: x-large;
-}
-
-#message {
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: rgba( 255, 255, 255, .66);
-    color: #000;
-    font-size: x-large;
-    font-family: sans-serif;
-    -webkit-box-flex: 1;
-    -webkit-flex: 1;
-    -moz-box-flex: 1;
-    -moz-flex: 1;
-    -ms-flex: 1;
-    flex: 1;
-}
-
-#message.hidden {
-    opacity: 0;
-    -webkit-opacity: 0;
-    top: 100%;
 }

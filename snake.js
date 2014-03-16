@@ -1,10 +1,13 @@
-var SankeGame = function (canvas, score, message) {
+var SankeGame = function (canvas) {
 
     var ctx = canvas.getContext('2d'),
+    message = 'Press Space To Start',
     isStarted = false,
     isOver = false,
     applesEaten = 0,
     blockSize = 10,
+    statusBarBlocks = 2,
+    statusBarSize = statusBarBlocks * blockSize,
 
     directions = {
         left: 'left',
@@ -34,30 +37,45 @@ var SankeGame = function (canvas, score, message) {
         apples: []
     },
 
-    gridSize = {
-        width: canvas.width / blockSize,
-        height: canvas.height / blockSize
+    grid = {
+        startX: 0,
+        startY: statusBarSize,
+        width: canvas.width,
+        height: canvas.height - statusBarSize,
+        widthBlocks: canvas.width / blockSize,
+        heightBlocks: (canvas.height - statusBarSize) / blockSize,
+        firstBlockX: 0,
+        firstBlockY: statusBarBlocks,
+        lastBlockX: canvas.width / blockSize,
+        lastBlockY: (canvas.height - statusBarSize) / blockSize + statusBarBlocks
+    },
+
+    statusBar = {
+        width: canvas.width,
+        height: statusBarSize
     },
 
     gameLoop = function () {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawGrid();
+        drawStatusBar();
         move();
         if (isDead()) {
-            showGameOver();
+            gameOver();
         } else {
             drawApples();
             drawSnake();
         }
     },
 
-    showGameOver = function () {
+    gameOver = function () {
         isOver = true;
         console.log('Game Over');
-        message.text('Game Over, Press Space To Start Over');
-        message.removeClass('hidden');
+        message = 'Game Over, Press Space To Start Over';
         clearInterval(game);
-        ctx.fillStyle = 'rgba(255, 0, 0, 1)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(grid.startX, grid.startY, grid.width, grid.height);
+        drawStatusBar();
+        drawGrid();
     },
 
     move = function () {
@@ -86,9 +104,9 @@ var SankeGame = function (canvas, score, message) {
         for (var i = 0; i < sprites.apples.length; i++) {
             if (head.x == sprites.apples[i].x && head.y == sprites.apples[i].y) {
                 console.log('You ate an apple');
-                sprites.apples.push({x: ~~(Math.random() * gridSize.width - 1), y: ~~(Math.random() * gridSize.height - 1)});
+                applesEaten++;
+                addApple();
                 sprites.apples.splice(i, 1);
-                score.text(++applesEaten);
                 return true;
             }
         }
@@ -103,15 +121,15 @@ var SankeGame = function (canvas, score, message) {
                 return true;
             }
         }
-        if (head.x < 0 || head.x >= gridSize.width || head.y < 0 || head.y >= gridSize.height) {
+        if (head.x < grid.firstBlockX || head.x >= grid.lastBlockX || head.y < grid.firstBlockY || head.y >= grid.lastBlockY) {
             console.log('You just hit a wall');
             return true;
         }
     },
 
     drawSnake = function () {
-        var opacity = 1;
-        var block = snake.body
+        var opacity = 1,
+        block = snake.body;
         for (var i in block) {
             ctx.fillStyle = 'rgba(0, 255, 0, ' + opacity + ')';
             ctx.fillRect(block[i].x * blockSize, block[i].y * blockSize, blockSize, blockSize);
@@ -121,10 +139,31 @@ var SankeGame = function (canvas, score, message) {
         }
     },
 
+    drawStatusBar = function () {
+        ctx.fillStyle = 'black';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'left';
+        ctx.fillText('Score: ' + applesEaten, 10, 16);
+        ctx.textAlign = 'center';
+        ctx.fillText(message, grid.width / 2, (grid.height / 2) + statusBarSize);
+    },
+
+    drawGrid = function () {
+        ctx.strokeStyle = 'black';
+        ctx.strokeRect(grid.startX, grid.startY, grid.width, grid.height);
+    },
+
+    addApple = function () {
+        sprites.apples.push({
+            x: ~~(Math.random() * grid.widthBlocks),
+            y: ~~((Math.random() * grid.heightBlocks) + statusBarBlocks)
+        });
+    },
+
     drawApples = function () {
-        var block = sprites.apples
+        var block = sprites.apples;
         for (var i in block) {
-            ctx.fillStyle = 'rgba(255, 0, 0, 1)';
+            ctx.fillStyle = 'red';
             ctx.fillRect(block[i].x * blockSize, block[i].y * blockSize, blockSize, blockSize);
         }
     };
@@ -143,12 +182,17 @@ var SankeGame = function (canvas, score, message) {
         return isOver;
     };
 
+    this.init = function () {
+        drawGrid();
+        drawStatusBar();
+    };
+
     this.newGame = function () {
-        message.addClass('hidden');
         isStarted = true;
+        message = '';
         currentDirection = directions.right;
         for (var i = 0; i < 4; i++) {
-            sprites.apples.push({x: ~~(Math.random() * gridSize.width - 1), y: ~~(Math.random() * gridSize.height - 1)});
+            addApple();
         }
         game = setInterval(gameLoop, 100);
     };
