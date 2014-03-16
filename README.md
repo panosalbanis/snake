@@ -1,4 +1,6 @@
 snake
 =====
 
-A clone of snake for the browser
+A clone of the classic game snake for the browser using an HTML canvas.
+
+Simply load index.html in your browser and enjoy.
