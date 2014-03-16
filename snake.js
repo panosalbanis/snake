@@ -1,4 +1,11 @@
-var SankeGame = function (canvas) {
+/*
+ * The classic snake game.
+ *
+ * Creates, initializes and starts a game of snake.
+ * @param {object} The canvas element to draw the game in.
+ * @constructor
+ */
+var SnakeGame = function (canvas) {
 
     var ctx = canvas.getContext('2d'),
     message = 'Press Space To Start',
@@ -168,25 +175,42 @@ var SankeGame = function (canvas) {
         }
     };
 
+    /*
+    * Changes the direction of the snakes movement.
+    */
     this.setDirection = function (direction) {
         if (direction != opposites[currentDirection]) {
             currentDirection = direction;
         }
     };
 
+    /*
+     * Checks if the game has started.
+     * @return {boolean} True if the game has started, false otherwise.
+     */
     this.isStarted = function () {
         return isStarted;
     };
 
+    /*
+     * Checks if the game is over.
+     * @return {boolean} True if the game is over, false otherwise.
+     */
     this.isOver = function () {
         return isOver;
     };
 
+    /*
+     * Sets the screen up for the game.
+     */
     this.init = function () {
         drawGrid();
         drawStatusBar();
     };
 
+    /**
+     * Starts a new game.
+     */
     this.newGame = function () {
         isStarted = true;
         message = '';
